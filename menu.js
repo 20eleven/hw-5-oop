@@ -67,21 +67,6 @@ NewOrder.prototype.chooseKind = function() {
 }
 
 
-
-
-
-// var newMenu = new MenuItemsCreator({
-//    hamburger: new Hamburger({
-//       name: 'ham',
-//       size: 'ham',
-//       stuffing: 'ham'
-//    }),
-//    dishSalad: 'menu', 
-//    drink: 'menu'
-// })
-// console.log(newMenu);
-// Hamburger.calculateCalories()
-
 var hamburger = new Hamburger({
    name: 'hamburger',
    size: {
@@ -104,6 +89,7 @@ var dishSalad = new DishSalad({
    }
 })
 
+
 var drink = new Drink({
    name: 'drink',
    kind: {
@@ -112,13 +98,16 @@ var drink = new Drink({
    }
 })
 
-var myOrder = new NewOrder({
 
+var myOrder = new NewOrder({
+   show: console.log(drink.kind.COLA[1] + 10)
 })
 myOrder.addSomething()
+myOrder.show
+console.log(drink.kind.COLA[1]);
 
 
 
 
 
-// node 5ver.js
+// node menu.js
