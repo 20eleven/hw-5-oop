@@ -50,17 +50,95 @@ Drink.prototype = Object.create(MenuItemsCreator.prototype)
 Drink.prototype.constructor = Drink
 
 
-var NewOrder = function() {
+var NewOrder = function(params) {
    MenuItemsCreator.apply(this, arguments)
+   this.bigBurgersCounter = params.bigBurgersCounter
+   this.smallBurgersCounter = params.smallBurgersCounter
+   this.dishSaladCounter = params.dishSaladCounter
 }
 NewOrder.prototype = Object.create(MenuItemsCreator.prototype)
 NewOrder.prototype.constructor = NewOrder
-NewOrder.prototype.addSomething = function() {
-   console.log('addSomething is work')
+NewOrder.prototype.addBigBurger = function(stuff) {
+   upStuff = stuff.toUpperCase()
+   if (upStuff === 'CHEESE') {
+      myOrder.bigBurgersCounter.bigCheese++
+   } else if (upStuff === 'SALAD') {
+      myOrder.bigBurgersCounter.bigSalad++
+   } else if (upStuff === 'POTATO') {
+      myOrder.bigBurgersCounter.bigPotato++
+   } else {
+      console.log('We have not got stuffing like this:', stuff, '- please chouse another (with CHEESE, SALAD or POTATO)')
+   }   
 } 
-NewOrder.prototype.delSomething = function() {
-   console.log('delSomething is work')
+NewOrder.prototype.delBigBurger = function(stuff) {
+   upStuff = stuff.toUpperCase()
+   if (upStuff === 'CHEESE' && myOrder.bigBurgersCounter.bigCheese > 0) {
+      myOrder.bigBurgersCounter.bigCheese--
+   } else if (upStuff === 'SALAD' && myOrder.bigBurgersCounter.bigSalad > 0) {
+      myOrder.bigBurgersCounter.bigSalad--
+   } else if (upStuff === 'POTATO' && myOrder.bigBurgersCounter.bigPotato > 0) {
+      myOrder.bigBurgersCounter.bigPotato--
+   } else {
+      console.log("You don't have big burgers like this in your order yet")
+   }  
 } 
+NewOrder.prototype.addSmallBurger = function(stuff) {
+   upStuff = stuff.toUpperCase()
+   if (upStuff === 'CHEESE') {
+      myOrder.smallBurgersCounter.smallCheese++
+   } else if (upStuff === 'SALAD') {
+      myOrder.smallBurgersCounter.smallSalad++
+   } else if (upStuff === 'POTATO') {
+      myOrder.smallBurgersCounter.smallPotato++
+   } else {
+      console.log('We have not got stuffing like this:', stuff, '- please chouse another (with CHEESE, SALAD or POTATO)')
+   }   
+} 
+NewOrder.prototype.delSmallBurger = function(stuff) {
+   upStuff = stuff.toUpperCase()
+   if (upStuff === 'CHEESE' && myOrder.smallBurgersCounter.smallCheese > 0) {
+      myOrder.smallBurgersCounter.smallCheese--
+   } else if (upStuff === 'SALAD' && myOrder.smallBurgersCounter.smallSalad > 0) {
+      myOrder.smallBurgersCounter.smallSalad--
+   } else if (upStuff === 'POTATO' && myOrder.smallBurgersCounter.smallPotato > 0) {
+      myOrder.smallBurgersCounter.smallPotato--
+   } else {
+      console.log("You don't have small burgers like this in your order yet")
+   }  
+} 
+NewOrder.prototype.addDishSalad = function(kind, grams) {
+   upKind = kind.toUpperCase()
+   if (upKind === 'CAESAR') {
+      myOrder.dishSaladCounter.caesarSalad.push([kind, grams])
+   } else if (upKind === 'OLIVIE') {
+      myOrder.dishSaladCounter.olivieSalad.push([kind, grams])
+   } else {
+      console.log('We have not got salads like this:', kind, '- please chouse another (CAESAR or OLIVIE)')
+   }  
+}
+NewOrder.prototype.delDishSalad = function(kind, grams) {
+   upKind = kind.toUpperCase()
+   if (myOrder.dishSaladCounter.caesarSalad !== []) {
+      if (upKind === 'CAESAR') {
+      var counter = 0
+         myOrder.dishSaladCounter.caesarSalad.map(function(saladItem) {
+            counter++
+            if (saladItem[1] === grams){ 
+               myOrder.dishSaladCounter.caesarSalad.slice(myOrder.dishSaladCounter.caesarSalad[counter-1])
+            }
+         })
+         //TODO:
+      }
+   } else {
+      console.log('You have not added any salad')
+   }
+   
+   // if ( upKind === 'CAESAR' && grams === myOrder.dishSaladCounter.caesarSalad[1]) {
+   //    delete myOrder.dishSaladCounter.caesarSalad
+   // } else if (upKind === 'OLIVIE') {
+   //    myOrder.dishSaladCounter.olivieSalad.push([kind, grams])
+   // } 
+}
 NewOrder.prototype.pay = function() {
    console.log('pay is work')
 } 
@@ -107,83 +185,29 @@ var drink = new Drink({
 
 var myOrder = new NewOrder({
    name: 'order',
+   bigBurgersCounter: {
+      bigCheese: 0,
+      bigSalad: 0,
+      bigPotato: 0
+   },
+   smallBurgersCounter: {
+      smallCheese: 0,
+      smallSalad: 0,
+      smallPotato: 0
+   }, 
+   dishSaladCounter: {
+      caesarSalad: [],
+      olivieSalad: []
+   }
    // show: console.log(drink.kind.COLA[1] + 10),
+
 })
-Object.defineProperty(myOrder, 'addBurgers', {
-   get: function() {
-      return this.quantityHamburger + ' ' + this.sizeHamburger + ' ' + this.stuffingHamburger + ' ' + this.anotherSizeQuantityHamburger + ' ' + this.anotherSizeHamburger + ' ' + this.anotherSizeHamburger + ' ' + this.anotherSizeStuffingHamburger
-   },
-   set: function(value) {
-      var burger = value.split(' ').map(function(wordItem) {
-         return wordItem
-      })
-      this.quantityHamburger = +burger[0] 
-      this.sizeHamburger = burger[1]
-      this.stuffingHamburger = burger[4]
-      if (value.includes('and')) {
-         var moreDiffBurger = value.split('and')[1].split(' ').map(function(wordItem) {
-            return wordItem
-         })
-         this.anotherSizeQuantityHamburger = +moreDiffBurger[1]
-         this.anotherSizeHamburger = moreDiffBurger[2]
-         this.anotherSizeStuffingHamburger = moreDiffBurger[5]
-      }     
-   }
-})
-Object.defineProperty(myOrder, 'addSalad', {
-   get: function() {
-      return this.myGramsSalad + ' ' + this.myDishSalad
-   },
-   set: function(value) {
-      var salad = value.split(' ').map(function(wordItem) {
-         return wordItem
-      })
-      this.myGramsSalad = salad[0]
-      this.myDishSalad = salad[1]
-   }
-})
-Object.defineProperty(myOrder, 'addDrink', {
-   get: function() {
-      return this.myDrink 
-   },
-   set: function(value) {
-      this.myDrink = value
-   }
-})
-// Object.defineProperty(myOrder, 'is', {
-//    get: function() {
-//       return this.quantityHamburger + ' ' + this.sizeHamburger + ' ' + this.stuffingHamburger + ' ' + this.myDishSalad + ' ' + this.gramsSalad + ' ' + this.myDrink
-//    },
-//    set: function(value) {
-//       var splitThat = value.split(', ')    
-//       var burger = splitThat[0].split(' ').map(function(wordItem) {
-//          return wordItem
-//       })
-//       this.quantityHamburger = +burger[0] 
-//       this.sizeHamburger = burger[1]
-//       this.stuffingHamburger = burger[4]
-//       var numArr = []
-//       var symArr = []
-//       for (var index = 0; index < splitThat[1].length; index++) {
-//          var char = splitThat[1][index]
-//          isNaN(Number(char)) ? symArr.push(char) : numArr.push(+char)
-//       }
-//       this.myDishSalad = symArr.join('')
-//       numArr.pop()
-//       this.gramsSalad = +numArr.join('')
-//       this.myDrink = splitThat[2]
-//    }
+// Object.defineProperties(myOrder, {
+//    'property1': {
+//       writable: false,
+//       configurable: false
+//     },
 // })
-
-
-
-
-// myOrder.is = '1 small hamburger with potato, 150 caesar, cola'
-myOrder.addBurgers = '1 small hamburger with potato and 2 big hamburger with cheese'
-myOrder.addSalad = '150 caesar'
-myOrder.addDrink = 'cola'
-
-console.log(myOrder);
 
 
 
