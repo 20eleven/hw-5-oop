@@ -21,7 +21,15 @@ var Hamburger = function(params) {
 Hamburger.prototype = Object.create(MenuItemsCreator.prototype)
 Hamburger.prototype.constructor = Hamburger
 Hamburger.prototype.getSize = function() {
-   console.log(myOrder.myHamburger)
+   var sumLittle = 0
+   var sumBig = 0
+   for (var key in myOrder.smallBurgersCounter) {
+      sumLittle = sumLittle + myOrder.smallBurgersCounter[key]
+   }
+   for (var key in myOrder.bigBurgersCounter) {
+      sumBig = sumBig + myOrder.bigBurgersCounter[key]
+   }
+   console.log(sumLittle, 'small and', sumBig, 'big burger(s) in your order')
 } 
 Hamburger.prototype.getStuffing = function() {
    console.log('getStuffing is work')
@@ -55,6 +63,7 @@ var NewOrder = function(params) {
    this.bigBurgersCounter = params.bigBurgersCounter
    this.smallBurgersCounter = params.smallBurgersCounter
    this.dishSaladCounter = params.dishSaladCounter
+   this.drinkCounter = params.drinkCounter
 }
 NewOrder.prototype = Object.create(MenuItemsCreator.prototype)
 NewOrder.prototype.constructor = NewOrder
@@ -120,25 +129,48 @@ NewOrder.prototype.delDishSalad = function(kind, grams) {
    upKind = kind.toUpperCase()
    if (myOrder.dishSaladCounter.caesarSalad !== []) {
       if (upKind === 'CAESAR') {
-      var counter = 0
+         var counter = 0
          myOrder.dishSaladCounter.caesarSalad.map(function(saladItem) {
             counter++
             if (saladItem[1] === grams){ 
-               myOrder.dishSaladCounter.caesarSalad.slice(myOrder.dishSaladCounter.caesarSalad[counter-1])
+               myOrder.dishSaladCounter.caesarSalad.splice(myOrder.dishSaladCounter.caesarSalad[counter-1], 1)
             }
          })
-         //TODO:
+      } else if (upKind === 'OLIVIE') {
+         var counter = 0
+         myOrder.dishSaladCounter.olivieSalad.map(function(saladItem) {
+            counter++
+            if (saladItem[1] === grams){ 
+               myOrder.dishSaladCounter.olivieSalad.splice(myOrder.dishSaladCounter.olivieSalad[counter-1], 1)
+            }
+         })
+      } else {
+         console.log('We have not got salads like this:', kind, '- please chouse another (CAESAR or OLIVIE)')
       }
    } else {
       console.log('You have not added any salad')
    }
-   
-   // if ( upKind === 'CAESAR' && grams === myOrder.dishSaladCounter.caesarSalad[1]) {
-   //    delete myOrder.dishSaladCounter.caesarSalad
-   // } else if (upKind === 'OLIVIE') {
-   //    myOrder.dishSaladCounter.olivieSalad.push([kind, grams])
-   // } 
 }
+NewOrder.prototype.addDrink = function(total) {
+   upTotal = total.toUpperCase()
+   if (upTotal === 'COLA') {
+      myOrder.drinkCounter.cola++
+   } else if (upTotal === 'COFFEE') {
+      myOrder.drinkCounter.coffee++
+   } else {
+      console.log('We have not got drinks like this:', total, '- please chouse another (COLA, COFFEE)')
+   }  
+}
+NewOrder.prototype.delDrink = function(total) {
+   upTotal = total.toUpperCase()
+   if (upTotal === 'COLA' && myOrder.drinkCounter.cola > 0) {
+      myOrder.drinkCounter.cola--
+   } else if (upTotal === 'COFFEE' && myOrder.drinkCounter.coffee > 0) {
+      myOrder.drinkCounter.coffee--
+   } else {
+      console.log("You don't have any drinks like this in your order yet")
+   }
+} 
 NewOrder.prototype.pay = function() {
    console.log('pay is work')
 } 
@@ -198,9 +230,12 @@ var myOrder = new NewOrder({
    dishSaladCounter: {
       caesarSalad: [],
       olivieSalad: []
+   },
+   drinkCounter: {
+      cola: 0,
+      coffee: 0
    }
    // show: console.log(drink.kind.COLA[1] + 10),
-
 })
 // Object.defineProperties(myOrder, {
 //    'property1': {
@@ -208,6 +243,24 @@ var myOrder = new NewOrder({
 //       configurable: false
 //     },
 // })
+
+
+
+
+myOrder.addBigBurger('cheese')
+myOrder.addSmallBurger('POTato')
+myOrder.addDishSalad('caesar', 150)
+myOrder.addDishSalad('olivie', 35)
+myOrder.addDrink('cola')
+
+hamburger.getSize()
+
+
+
+
+// console.log(myOrder);
+// console.log();
+// console.log(drink);
 
 
 
