@@ -2,19 +2,15 @@ var MenuItemsCreator = function(params) {
    this.name = params.name || 'menu'
 }
 MenuItemsCreator.prototype.calculatePrice = function() {
-   console.log('calculatePrice is work')
+   console.log('calculatePrice is work')//TODO:
 }
 MenuItemsCreator.prototype.calculateCalories = function() {
-   console.log('calculateCalories is work')
-}
-MenuItemsCreator.prototype.chooseKind = function() {
-   console.log('chooseKind is work', this.kind)
+   console.log('calculateCalories is work')//TODO:
 }
 
 
 var Hamburger = function(params) {
    MenuItemsCreator.apply(this, arguments)
-   this.quantity = params.quantity
    this.size = params.size
    this.stuffing = params.stuffing
 }
@@ -32,18 +28,34 @@ Hamburger.prototype.getSize = function() {
    console.log(sumLittle, 'small and', sumBig, 'big burger(s) in your order')
 } 
 Hamburger.prototype.getStuffing = function() {
-   console.log('getStuffing is work')
-}
-Hamburger.prototype.chooseKind = function() {
-   console.log('Ooops, no options like this for burger(')
+   for (var key in myOrder.smallBurgersCounter) {
+      if (myOrder.smallBurgersCounter[key] > 0) {
+         if (key === 'smallCheese') {
+            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with cheese stuffing in your order')
+         } else if (key === 'smallSalad') {
+            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with salad stuffing in your order')
+         } else if (key === 'smallPotato') {
+            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with potato stuffing in your order')
+         } 
+      } 
+   }
+   for (var key in myOrder.bigBurgersCounter) {
+      if (myOrder.bigBurgersCounter[key] > 0) {
+         if (key === 'bigCheese') {
+            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with cheese stuffing in your order')
+         } else if (key === 'bigSalad') {
+            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with salad stuffing in your order')
+         } else if (key === 'bigPotato') {
+            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with potato stuffing in your order')
+         } 
+      } 
+   }
 }
 
 
 var DishSalad = function(params) {
    MenuItemsCreator.apply(this, arguments)
-   this.quantity = params.quantity
    this.kind = params.kind
-   this.grams = params.grams
 }
 DishSalad.prototype = Object.create(MenuItemsCreator.prototype)
 DishSalad.prototype.constructor = DishSalad
@@ -51,7 +63,6 @@ DishSalad.prototype.constructor = DishSalad
 
 var Drink = function(params) {
    MenuItemsCreator.apply(this, arguments)
-   this.quantity = params.quantity
    this.kind = params.kind
 }
 Drink.prototype = Object.create(MenuItemsCreator.prototype)
@@ -171,17 +182,13 @@ NewOrder.prototype.delDrink = function(total) {
       console.log("You don't have any drinks like this in your order yet")
    }
 } 
-NewOrder.prototype.pay = function() {
+NewOrder.prototype.pay = function() { //TODO:
    console.log('pay is work')
 } 
-NewOrder.prototype.chooseKind = function() {
-   console.log('Ooops, no options like this for NewOrder(')
-}
 
 
 var hamburger = new Hamburger({
    name: 'hamburger',
-   quantity: 0,
    size: {
       SIZE_SMALL: [50, 20],
       SIZE_LARGE: [100, 40]
@@ -190,14 +197,13 @@ var hamburger = new Hamburger({
       STUFFING_CHEESE: [10, 20],
       STUFFING_SALAD: [20, 5],
       STUFFING_POTATO: [15, 10]
-   }
+   },
+   kindOfStuffing: ['cheese', 'salad', 'potato'] //FIXME:поменять методы для оптимизации и исключения этих значений из них. То есть, проходимся по этому массиву и, если есть сопадения, то выполняем действие, это должно позволить масштабировать код в будущем при надобности
 })
 
 
 var dishSalad = new DishSalad({
    name: 'salad',
-   quantity: 0,
-   grams: 0,
    kind: {
       CAESAR: [100, 20],
       OLIVIE: [50, 80]
@@ -207,7 +213,6 @@ var dishSalad = new DishSalad({
 
 var drink = new Drink({
    name: 'drink',
-   quantity: 0,
    kind: {
       COLA: [50, 40],
       COFFEE: [80, 20]
@@ -237,6 +242,7 @@ var myOrder = new NewOrder({
    }
    // show: console.log(drink.kind.COLA[1] + 10),
 })
+//TODO:
 // Object.defineProperties(myOrder, {
 //    'property1': {
 //       writable: false,
@@ -249,18 +255,15 @@ var myOrder = new NewOrder({
 
 myOrder.addBigBurger('cheese')
 myOrder.addSmallBurger('POTato')
+myOrder.addSmallBurger('cheese')
 myOrder.addDishSalad('caesar', 150)
 myOrder.addDishSalad('olivie', 35)
 myOrder.addDrink('cola')
 
-hamburger.getSize()
+// hamburger.getSize()
+// hamburger.getStuffing()
 
-
-
-
-// console.log(myOrder);
-// console.log();
-// console.log(drink);
+// console.log(myOrder)
 
 
 
