@@ -1,272 +1,136 @@
-var MenuItemsCreator = function(params) {
-   this.name = params.name || 'menu'
+function MenuItemCreator(name, price, calories) {
+   this.name = name
+   this.price = price
+   this.calories = calories
 }
-MenuItemsCreator.prototype.calculatePrice = function() {
-   console.log('calculatePrice is work')//TODO:
+MenuItemCreator.prototype.calculatePrice = function() {
+   return this.price  
 }
-MenuItemsCreator.prototype.calculateCalories = function() {
-   console.log('calculateCalories is work')//TODO:
+MenuItemCreator.prototype.calculateCalories = function() {
+   return this.calories
 }
 
 
-var Hamburger = function(params) {
-   MenuItemsCreator.apply(this, arguments)
-   this.size = params.size
-   this.stuffing = params.stuffing
+function Hamburger(size, stuffing) {
+   MenuItemCreator.apply(this)   
+   this.size = size
+   this.stuffing = stuffing
+   this.name = size.name + ' hamburger with ' + stuffing.name
+   this.price = size.price + stuffing.price
+   this.calories = size.calories + stuffing.calories
 }
-Hamburger.prototype = Object.create(MenuItemsCreator.prototype)
+Hamburger.prototype = Object.create(MenuItemCreator.prototype)
 Hamburger.prototype.constructor = Hamburger
 Hamburger.prototype.getSize = function() {
-   var sumLittle = 0
-   var sumBig = 0
-   for (var key in myOrder.smallBurgersCounter) {
-      sumLittle = sumLittle + myOrder.smallBurgersCounter[key]
-   }
-   for (var key in myOrder.bigBurgersCounter) {
-      sumBig = sumBig + myOrder.bigBurgersCounter[key]
-   }
-   console.log(sumLittle, 'small and', sumBig, 'big burger(s) in your order')
-} 
+   console.log('This is', this.size.name.toLowerCase(), 'hamburger')
+}
 Hamburger.prototype.getStuffing = function() {
-   for (var key in myOrder.smallBurgersCounter) {
-      if (myOrder.smallBurgersCounter[key] > 0) {
-         if (key === 'smallCheese') {
-            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with cheese stuffing in your order')
-         } else if (key === 'smallSalad') {
-            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with salad stuffing in your order')
-         } else if (key === 'smallPotato') {
-            console.log(myOrder.smallBurgersCounter[key], 'small burger(s) with potato stuffing in your order')
-         } 
-      } 
-   }
-   for (var key in myOrder.bigBurgersCounter) {
-      if (myOrder.bigBurgersCounter[key] > 0) {
-         if (key === 'bigCheese') {
-            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with cheese stuffing in your order')
-         } else if (key === 'bigSalad') {
-            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with salad stuffing in your order')
-         } else if (key === 'bigPotato') {
-            console.log(myOrder.bigBurgersCounter[key], 'large burger(s) with potato stuffing in your order')
-         } 
-      } 
-   }
+   console.log('That hamburger with', this.stuffing.name, 'stuffing')
 }
+Hamburger.SIZE_SMALL = { name: 'Small', price: 50, calories: 20 }
+Hamburger.SIZE_LARGE = { name: 'Large', price: 100, calories: 40 }
+Hamburger.STUFFING_CHEESE = { name: 'cheese', price: 10, calories: 20 }
+Hamburger.STUFFING_SALAD = { name: 'salad', price: 20, calories: 5 }
+Hamburger.STUFFING_POTATO = { name: 'potato', price: 15, calories: 10 }
 
 
-var DishSalad = function(params) {
-   MenuItemsCreator.apply(this, arguments)
-   this.kind = params.kind
+function Salad(saladKind, gramms) {
+   MenuItemCreator.apply(this, [saladKind])
+   this.gramms = gramms || 100
+   this.name = saladKind.name + ' salad'
+   this.price = saladKind.price * (gramms / 100)
+   this.calories = saladKind.calories * (gramms / 100)
 }
-DishSalad.prototype = Object.create(MenuItemsCreator.prototype)
-DishSalad.prototype.constructor = DishSalad
+Salad.prototype = Object.create(MenuItemCreator.prototype)
+Salad.prototype.constructor = Salad
+Salad.CAEZAR = { name: 'Caezar', price: 100, calories: 20 }
+Salad.OLIVIER = { name: 'Olivier', price: 50, calories: 80 }
 
 
-var Drink = function(params) {
-   MenuItemsCreator.apply(this, arguments)
-   this.kind = params.kind
+function Drink(drinkKind) { 
+   MenuItemCreator.apply(this, [drinkKind.name, drinkKind.price, drinkKind.calories])
 }
-Drink.prototype = Object.create(MenuItemsCreator.prototype)
+Drink.prototype = Object.create(MenuItemCreator.prototype)
 Drink.prototype.constructor = Drink
+Drink.COLA = { name: 'Cola', price: 50, calories: 40 }
+Drink.COFFEE = { name: 'Coffee', price: 80, calories: 20 }
 
 
-var NewOrder = function(params) {
-   MenuItemsCreator.apply(this, arguments)
-   this.bigBurgersCounter = params.bigBurgersCounter
-   this.smallBurgersCounter = params.smallBurgersCounter
-   this.dishSaladCounter = params.dishSaladCounter
-   this.drinkCounter = params.drinkCounter
+function Order(items) { 
+   this.items = items
+   this.pay = false
 }
-NewOrder.prototype = Object.create(MenuItemsCreator.prototype)
-NewOrder.prototype.constructor = NewOrder
-NewOrder.prototype.addBigBurger = function(stuff) {
-   upStuff = stuff.toUpperCase()
-   if (upStuff === 'CHEESE') {
-      myOrder.bigBurgersCounter.bigCheese++
-   } else if (upStuff === 'SALAD') {
-      myOrder.bigBurgersCounter.bigSalad++
-   } else if (upStuff === 'POTATO') {
-      myOrder.bigBurgersCounter.bigPotato++
-   } else {
-      console.log('We have not got stuffing like this:', stuff, '- please chouse another (with CHEESE, SALAD or POTATO)')
-   }   
-} 
-NewOrder.prototype.delBigBurger = function(stuff) {
-   upStuff = stuff.toUpperCase()
-   if (upStuff === 'CHEESE' && myOrder.bigBurgersCounter.bigCheese > 0) {
-      myOrder.bigBurgersCounter.bigCheese--
-   } else if (upStuff === 'SALAD' && myOrder.bigBurgersCounter.bigSalad > 0) {
-      myOrder.bigBurgersCounter.bigSalad--
-   } else if (upStuff === 'POTATO' && myOrder.bigBurgersCounter.bigPotato > 0) {
-      myOrder.bigBurgersCounter.bigPotato--
-   } else {
-      console.log("You don't have big burgers like this in your order yet")
-   }  
-} 
-NewOrder.prototype.addSmallBurger = function(stuff) {
-   upStuff = stuff.toUpperCase()
-   if (upStuff === 'CHEESE') {
-      myOrder.smallBurgersCounter.smallCheese++
-   } else if (upStuff === 'SALAD') {
-      myOrder.smallBurgersCounter.smallSalad++
-   } else if (upStuff === 'POTATO') {
-      myOrder.smallBurgersCounter.smallPotato++
-   } else {
-      console.log('We have not got stuffing like this:', stuff, '- please chouse another (with CHEESE, SALAD or POTATO)')
-   }   
-} 
-NewOrder.prototype.delSmallBurger = function(stuff) {
-   upStuff = stuff.toUpperCase()
-   if (upStuff === 'CHEESE' && myOrder.smallBurgersCounter.smallCheese > 0) {
-      myOrder.smallBurgersCounter.smallCheese--
-   } else if (upStuff === 'SALAD' && myOrder.smallBurgersCounter.smallSalad > 0) {
-      myOrder.smallBurgersCounter.smallSalad--
-   } else if (upStuff === 'POTATO' && myOrder.smallBurgersCounter.smallPotato > 0) {
-      myOrder.smallBurgersCounter.smallPotato--
-   } else {
-      console.log("You don't have small burgers like this in your order yet")
-   }  
-} 
-NewOrder.prototype.addDishSalad = function(kind, grams) {
-   upKind = kind.toUpperCase()
-   if (upKind === 'CAESAR') {
-      myOrder.dishSaladCounter.caesarSalad.push([kind, grams])
-   } else if (upKind === 'OLIVIE') {
-      myOrder.dishSaladCounter.olivieSalad.push([kind, grams])
-   } else {
-      console.log('We have not got salads like this:', kind, '- please chouse another (CAESAR or OLIVIE)')
-   }  
+Order.prototype.getOrder = function() {
+   var orderListArr = []
+   this.items.map(function(dishElement) {
+      orderListArr.push(dishElement.name)
+   })
+   var orderListArrToStr = orderListArr.join(' + ')
+   console.log('Ur order:', orderListArrToStr)
 }
-NewOrder.prototype.delDishSalad = function(kind, grams) {
-   upKind = kind.toUpperCase()
-   if (myOrder.dishSaladCounter.caesarSalad !== []) {
-      if (upKind === 'CAESAR') {
-         var counter = 0
-         myOrder.dishSaladCounter.caesarSalad.map(function(saladItem) {
-            counter++
-            if (saladItem[1] === grams){ 
-               myOrder.dishSaladCounter.caesarSalad.splice(myOrder.dishSaladCounter.caesarSalad[counter-1], 1)
-            }
-         })
-      } else if (upKind === 'OLIVIE') {
-         var counter = 0
-         myOrder.dishSaladCounter.olivieSalad.map(function(saladItem) {
-            counter++
-            if (saladItem[1] === grams){ 
-               myOrder.dishSaladCounter.olivieSalad.splice(myOrder.dishSaladCounter.olivieSalad[counter-1], 1)
-            }
-         })
-      } else {
-         console.log('We have not got salads like this:', kind, '- please chouse another (CAESAR or OLIVIE)')
-      }
+Order.prototype.calculatePrice = function() {
+   var price = 0
+   this.items.forEach(function(dishElement) {
+      price += dishElement.calculatePrice()
+   }) 
+   console.log('Full price:', price, 'tugriks')
+}
+Order.prototype.calculateCalories = function() {
+   var calories = 0 
+   for (var index = 0; index < this.items.length; index++) {
+      var dishElement = this.items[index]
+      calories += dishElement.calculateCalories()
+   }
+   console.log('Total energy value:', calories, 'calories')
+}
+Order.prototype.addItems = function(newItems) {
+   if (this.pay === false) {
+      this.items = this.items.concat(newItems)
+      this.getOrder()
    } else {
-      console.log('You have not added any salad')
+      console.log('To add new items please create a new order')
    }
 }
-NewOrder.prototype.addDrink = function(total) {
-   upTotal = total.toUpperCase()
-   if (upTotal === 'COLA') {
-      myOrder.drinkCounter.cola++
-   } else if (upTotal === 'COFFEE') {
-      myOrder.drinkCounter.coffee++
+Order.prototype.deleteItems = function() {
+   if (this.pay === false) {
+      var delArgs = Array.prototype.slice.call(arguments) 
+      this.items = this.items.filter(function(dishElement) {
+         return delArgs.indexOf(dishElement)
+      })
+      this.getOrder()
    } else {
-      console.log('We have not got drinks like this:', total, '- please chouse another (COLA, COFFEE)')
-   }  
+      console.log('It is no longer possible to delete items in this order')
+   }
 }
-NewOrder.prototype.delDrink = function(total) {
-   upTotal = total.toUpperCase()
-   if (upTotal === 'COLA' && myOrder.drinkCounter.cola > 0) {
-      myOrder.drinkCounter.cola--
-   } else if (upTotal === 'COFFEE' && myOrder.drinkCounter.coffee > 0) {
-      myOrder.drinkCounter.coffee--
-   } else {
-      console.log("You don't have any drinks like this in your order yet")
-   }
-} 
-NewOrder.prototype.pay = function() { //TODO:
-   console.log('pay is work')
-} 
+Order.prototype.payOrder = function() {
+   this.pay = true
+   console.log('The order is fully paid')
+}
 
 
-var hamburger = new Hamburger({
-   name: 'hamburger',
-   size: {
-      SIZE_SMALL: [50, 20],
-      SIZE_LARGE: [100, 40]
-   },
-   stuffing: {
-      STUFFING_CHEESE: [10, 20],
-      STUFFING_SALAD: [20, 5],
-      STUFFING_POTATO: [15, 10]
-   },
-   kindOfStuffing: ['cheese', 'salad', 'potato'] //FIXME:поменять методы для оптимизации и исключения этих значений из них. То есть, проходимся по этому массиву и, если есть сопадения, то выполняем действие, это должно позволить масштабировать код в будущем при надобности
-})
+var myNewHamburger1 = new Hamburger(Hamburger.SIZE_LARGE, Hamburger.STUFFING_POTATO)
+var myNewHamburger2 = new Hamburger(Hamburger.SIZE_SMALL, Hamburger.STUFFING_CHEESE)
+var myNewSalad1 = new Salad(Salad.OLIVIER, 200)
+var myNewDrink1 = new Drink(Drink.COLA)
+var myOwnOrder1 = new Order([myNewHamburger1, myNewSalad1, myNewDrink1])
 
+myNewHamburger1.getSize()
+myNewHamburger2.getStuffing()
 
-var dishSalad = new DishSalad({
-   name: 'salad',
-   kind: {
-      CAESAR: [100, 20],
-      OLIVIE: [50, 80]
-   }
-})
+myOwnOrder1.getOrder()
+myOwnOrder1.calculatePrice()
+myOwnOrder1.calculateCalories()
 
+myOwnOrder1.addItems(myNewHamburger2)
+myOwnOrder1.calculatePrice()
+myOwnOrder1.calculateCalories()
 
-var drink = new Drink({
-   name: 'drink',
-   kind: {
-      COLA: [50, 40],
-      COFFEE: [80, 20]
-   }
-})
+myOwnOrder1.deleteItems(myNewHamburger2)
+myOwnOrder1.calculatePrice()
+myOwnOrder1.calculateCalories()
 
-
-var myOrder = new NewOrder({
-   name: 'order',
-   bigBurgersCounter: {
-      bigCheese: 0,
-      bigSalad: 0,
-      bigPotato: 0
-   },
-   smallBurgersCounter: {
-      smallCheese: 0,
-      smallSalad: 0,
-      smallPotato: 0
-   }, 
-   dishSaladCounter: {
-      caesarSalad: [],
-      olivieSalad: []
-   },
-   drinkCounter: {
-      cola: 0,
-      coffee: 0
-   }
-   // show: console.log(drink.kind.COLA[1] + 10),
-})
-//TODO:
-// Object.defineProperties(myOrder, {
-//    'property1': {
-//       writable: false,
-//       configurable: false
-//     },
-// })
-
-
-
-
-myOrder.addBigBurger('cheese')
-myOrder.addSmallBurger('POTato')
-myOrder.addSmallBurger('cheese')
-myOrder.addDishSalad('caesar', 150)
-myOrder.addDishSalad('olivie', 35)
-myOrder.addDrink('cola')
-
-// hamburger.getSize()
-// hamburger.getStuffing()
-
-// console.log(myOrder)
-
-
-
-
+myOwnOrder1.payOrder()
+myOwnOrder1.deleteItems(myNewDrink1)
+myOwnOrder1.addItems(myNewHamburger2)
 
 // node menu.js
