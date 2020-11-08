@@ -91,13 +91,17 @@ Order.prototype.addItems = function(newItems) {
       console.log('To add new items please create a new order')
    }
 }
-Order.prototype.deleteItems = function() {
+Order.prototype.deleteItems = function(delItem) {
    if (this.pay === false) {
       var delArgs = Array.prototype.slice.call(arguments) 
-      this.items = this.items.filter(function(dishElement) {
-         return delArgs.indexOf(dishElement)
-      })
-      this.getOrder()
+      if (this.items.includes(delItem)) {
+         this.items = this.items.filter(function(dishElement) {
+            return delArgs.indexOf(dishElement)
+         })
+         this.getOrder()
+      } else {
+         console.log('You do not have item like this in your order')
+      }      
    } else {
       console.log('It is no longer possible to delete items in this order')
    }
@@ -114,21 +118,23 @@ var myNewSalad1 = new Salad(Salad.OLIVIER, 200)
 var myNewDrink1 = new Drink(Drink.COLA)
 var myOwnOrder1 = new Order([myNewHamburger1, myNewSalad1, myNewDrink1])
 
+console.log()
 myNewHamburger1.getSize()
 myNewHamburger2.getStuffing()
-
+console.log('->')
 myOwnOrder1.getOrder()
 myOwnOrder1.calculatePrice()
 myOwnOrder1.calculateCalories()
-
+console.log('->')
 myOwnOrder1.addItems(myNewHamburger2)
 myOwnOrder1.calculatePrice()
 myOwnOrder1.calculateCalories()
-
+console.log('->')
+myOwnOrder1.deleteItems(myNewHamburger2)
 myOwnOrder1.deleteItems(myNewHamburger2)
 myOwnOrder1.calculatePrice()
 myOwnOrder1.calculateCalories()
-
+console.log('->')
 myOwnOrder1.payOrder()
 myOwnOrder1.deleteItems(myNewDrink1)
 myOwnOrder1.addItems(myNewHamburger2)
