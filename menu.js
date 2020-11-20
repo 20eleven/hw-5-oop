@@ -1,31 +1,68 @@
-function MenuItemCreator(name, price, calories) {
+//----------------------------------------------------------------------------------------
+//reduce polyfill
+if (!Array.prototype.reduce) {
+   Array.prototype.reduce = function(callback/*, initialValue*/) {
+     'use strict';
+     if (this == null) {
+       throw new TypeError('Array.prototype.reduce called on null or undefined');
+     }
+     if (typeof callback !== 'function') {
+       throw new TypeError(callback + ' is not a function');
+     }
+     var t = Object(this), len = t.length >>> 0, k = 0, value;
+     if (arguments.length >= 2) {
+       value = arguments[1];
+     } else {
+       while (k < len && ! (k in t)) {
+         k++; 
+       }
+       if (k >= len) {
+         throw new TypeError('Reduce of empty array with no initial value');
+       }
+       value = t[k++];
+     }
+     for (; k < len; k++) {
+       if (k in t) {
+         value = callback(value, t[k], k, t);
+       }
+     }
+     return value;
+   };
+ }
+//----------------------------------------------------------------------------------------
+
+
+//task solution ↓↓↓
+function MenuItem(name, price, calories) {
    this.name = name
    this.price = price
    this.calories = calories
 }
-MenuItemCreator.prototype.calculatePrice = function() {
+MenuItem.prototype.calculatePrice = function() {
    return this.price  
 }
-MenuItemCreator.prototype.calculateCalories = function() {
+MenuItem.prototype.calculateCalories = function() {
    return this.calories
 }
 
 
-function Hamburger(size, stuffing) {
-   MenuItemCreator.apply(this)   
-   this.size = size
-   this.stuffing = stuffing
-   this.name = size.name + ' hamburger with ' + stuffing.name
-   this.price = size.price + stuffing.price
-   this.calories = size.calories + stuffing.calories
+function Hamburger(burgerSize, burgerStuffing) {
+   MenuItem.call(this, burgerSize, burgerStuffing)   
+   this.size = burgerSize.name
+   this.stuffing = burgerStuffing.name
+   this.name = burgerSize.name + ' hamburger with ' + burgerStuffing.name
+   this.price = burgerSize.price + burgerStuffing.price
+   this.calories = burgerSize.calories + burgerStuffing.calories
 }
-Hamburger.prototype = Object.create(MenuItemCreator.prototype)
+Hamburger.prototype = Object.create(MenuItem.prototype)
 Hamburger.prototype.constructor = Hamburger
 Hamburger.prototype.getSize = function() {
-   console.log('This is', this.size.name.toLowerCase(), 'hamburger')
+   console.log('This is', this.size.toLowerCase(), 'hamburger')
+   return this.size
 }
 Hamburger.prototype.getStuffing = function() {
-   console.log('That hamburger with', this.stuffing.name, 'stuffing')
+   console.log('That hamburger with', this.stuffing, 'stuffing')
+   return this.stuffing
 }
 Hamburger.SIZE_SMALL = { name: 'Small', price: 50, calories: 20 }
 Hamburger.SIZE_LARGE = { name: 'Large', price: 100, calories: 40 }
@@ -35,22 +72,22 @@ Hamburger.STUFFING_POTATO = { name: 'potato', price: 15, calories: 10 }
 
 
 function Salad(saladKind, gramms) {
-   MenuItemCreator.apply(this, [saladKind])
+   MenuItem.call(this, saladKind)
    this.gramms = gramms || 100
    this.name = saladKind.name + ' salad'
    this.price = saladKind.price * (gramms / 100)
    this.calories = saladKind.calories * (gramms / 100)
 }
-Salad.prototype = Object.create(MenuItemCreator.prototype)
+Salad.prototype = Object.create(MenuItem.prototype)
 Salad.prototype.constructor = Salad
 Salad.CAEZAR = { name: 'Caezar', price: 100, calories: 20 }
 Salad.OLIVIER = { name: 'Olivier', price: 50, calories: 80 }
 
 
 function Drink(drinkKind) { 
-   MenuItemCreator.apply(this, [drinkKind.name, drinkKind.price, drinkKind.calories])
+   MenuItem.call(this, drinkKind.name, drinkKind.price, drinkKind.calories)
 }
-Drink.prototype = Object.create(MenuItemCreator.prototype)
+Drink.prototype = Object.create(MenuItem.prototype)
 Drink.prototype.constructor = Drink
 Drink.COLA = { name: 'Cola', price: 50, calories: 40 }
 Drink.COFFEE = { name: 'Coffee', price: 80, calories: 20 }
@@ -67,21 +104,23 @@ Order.prototype.getOrder = function() {
    })
    var orderListArrToStr = orderListArr.join(' + ')
    console.log('Ur order:', orderListArrToStr)
+   return orderListArr
 }
 Order.prototype.calculatePrice = function() {
-   var price = 0
-   this.items.forEach(function(dishElement) {
-      price += dishElement.calculatePrice()
-   }) 
-   console.log('Full price:', price, 'tugriks')
+   var initialValue = 0
+   var totalPrice = this.items.reduce(function(accumulator, currentValue) {
+       return accumulator + currentValue.price
+   }, initialValue)
+   console.log('Full price:', totalPrice, 'tugriks')
+   return totalPrice
 }
 Order.prototype.calculateCalories = function() {
-   var calories = 0 
-   for (var index = 0; index < this.items.length; index++) {
-      var dishElement = this.items[index]
-      calories += dishElement.calculateCalories()
-   }
-   console.log('Total energy value:', calories, 'calories')
+   var initialValue = 0
+   var totalCalories = this.items.reduce(function(accumulator, currentValue) {
+       return accumulator + currentValue.calories
+   }, initialValue)
+   console.log('Total energy value:', totalCalories, 'calories')
+   return totalCalories
 }
 Order.prototype.addItems = function(newItems) {
    if (this.pay === false) {
@@ -106,8 +145,20 @@ Order.prototype.deleteItems = function(delItem) {
       console.log('It is no longer possible to delete items in this order')
    }
 }
+
+function deepFreeze(obj) {
+   var propNames = Object.getOwnPropertyNames(obj)
+   propNames.forEach(function(name) {
+      var prop = obj[name]
+      if (typeof prop == 'object' && prop !== null)
+         deepFreeze(prop)
+   })
+   return Object.freeze(obj)
+}
+
 Order.prototype.payOrder = function() {
    this.pay = true
+   deepFreeze(this)
    console.log('The order is fully paid')
 }
 
